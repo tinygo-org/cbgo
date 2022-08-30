@@ -90,7 +90,8 @@ func ParseUUID128(s string) (UUID, error) {
 func ParseUUID(s string) (UUID, error) {
 	switch len(s) {
 	case UUID16StringLength:
-		return ParseUUID16(s)
+		converted := fmt.Sprintf("0000%s-0000-1000-8000-00805F9B34FB", s)
+		return ParseUUID128(converted)
 	case UUID32StringLength:
 		converted := fmt.Sprintf("%s-0000-1000-8000-00805F9B34FB", s)
 		return ParseUUID128(converted)
