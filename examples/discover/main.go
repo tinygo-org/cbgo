@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/JuulLabs-OSS/cbgo"
+	"github.com/tinygo-org/cbgo"
 )
 
 type MyDelegate struct {

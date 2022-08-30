@@ -1,4 +1,4 @@
-module github.com/JuulLabs-OSS/cbgo
+module github.com/tinygo-org/cbgo
 
 go 1.14
 
