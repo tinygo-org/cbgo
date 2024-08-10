@@ -7,6 +7,7 @@ package cbgo
 import "C"
 
 import (
+	"errors"
 	"unsafe"
 )
 
@@ -91,7 +92,8 @@ func (pm PeripheralManager) RemoveAllServices() {
 }
 
 // StartAdvertising: https://developer.apple.com/documentation/corebluetooth/cbperipheralmanager/1393252-startadvertising
-func (pm PeripheralManager) StartAdvertising(ad AdvData) {
+func (pm PeripheralManager) StartAdvertising(ad AdvData) error {
+	err := C.struct_bt_error{}
 	cad := C.struct_adv_data{}
 
 	if len(ad.IBeaconData) > 0 {
@@ -108,6 +110,13 @@ func (pm PeripheralManager) StartAdvertising(ad AdvData) {
 	}
 
 	C.cb_pmgr_start_adv(pm.ptr, &cad)
+
+	BTPeripheralManagerDidStartAdvertising(pm.ptr, &err)
+	if err.code != 0 {
+		return errors.New("")
+	}
+
+	return nil
 }
 
 // StopAdvertising: https://developer.apple.com/documentation/corebluetooth/cbperipheralmanager/1393275-stopadvertising
