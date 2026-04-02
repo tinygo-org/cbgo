@@ -139,6 +139,7 @@ int cb_l2cap_read(void *channel, uint8_t *buf, int maxLen);
 int cb_l2cap_write(void *channel, const uint8_t *data, int len);
 bool cb_l2cap_has_bytes_available(void *channel);
 bool cb_l2cap_has_space_available(void *channel);
+void cb_l2cap_schedule_streams(void *channel);
 void cb_l2cap_close(void *channel);
 void cb_pmgr_publish_l2cap_channel(void *pmgr, bool encryption);
 void cb_pmgr_unpublish_l2cap_channel(void *pmgr, uint16_t psm);

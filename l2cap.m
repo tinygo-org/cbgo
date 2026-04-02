@@ -42,10 +42,23 @@ bool cb_l2cap_has_space_available(void *channel) {
     return [ch.outputStream hasSpaceAvailable];
 }
 
+void cb_l2cap_schedule_streams(void *channel) {
+    CBL2CAPChannel *ch = (CBL2CAPChannel *)channel;
+    NSRunLoop *rl = [NSRunLoop mainRunLoop];
+    [ch.inputStream scheduleInRunLoop:rl forMode:NSDefaultRunLoopMode];
+    [ch.outputStream scheduleInRunLoop:rl forMode:NSDefaultRunLoopMode];
+    [ch.inputStream open];
+    [ch.outputStream open];
+}
+
 void cb_l2cap_close(void *channel) {
     CBL2CAPChannel *ch = (CBL2CAPChannel *)channel;
+    NSRunLoop *rl = [NSRunLoop mainRunLoop];
     [ch.inputStream close];
     [ch.outputStream close];
+    [ch.inputStream removeFromRunLoop:rl forMode:NSDefaultRunLoopMode];
+    [ch.outputStream removeFromRunLoop:rl forMode:NSDefaultRunLoopMode];
+    [ch release];
 }
 
 void cb_pmgr_publish_l2cap_channel(void *pmgr, bool encryption) {

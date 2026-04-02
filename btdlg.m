@@ -326,6 +326,7 @@ didOpenL2CAPChannel:(CBL2CAPChannel *)channel
 {
     if (channel != nil) {
         [channel retain];
+        cb_l2cap_schedule_streams(channel);
     }
     struct bt_error err = nserror_to_bt_error(nserr);
     BTPeripheralDidOpenL2CAPChannel(prph, channel, &err);
@@ -490,6 +491,7 @@ didOpenL2CAPChannel:(CBL2CAPChannel *)channel
 {
     if (channel != nil) {
         [channel retain];
+        cb_l2cap_schedule_streams(channel);
     }
     struct bt_error err = nserror_to_bt_error(nserr);
     BTPeripheralManagerDidOpenL2CAPChannel(pmgr, channel, &err);
