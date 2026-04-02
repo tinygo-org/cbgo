@@ -316,6 +316,21 @@ didModifyServices:(NSArray<CBService *> *)invSvcs
     free(oa.objs);
 }
 
+/**
+ * Called when an L2CAP channel has been opened.
+ */
+- (void)
+    peripheral:(CBPeripheral *)prph
+didOpenL2CAPChannel:(CBL2CAPChannel *)channel
+         error:(NSError *)nserr
+{
+    if (channel != nil) {
+        [channel retain];
+    }
+    struct bt_error err = nserror_to_bt_error(nserr);
+    BTPeripheralDidOpenL2CAPChannel(prph, channel, &err);
+}
+
 
 /**
  * Called whenever the peripheral manager's state is updated.
@@ -439,6 +454,45 @@ didReceiveWriteRequests:(NSArray *)reqs
 
     BTPeripheralManagerDidReceiveWriteRequests(pmgr, &oa);
     free(oa.objs);
+}
+
+/**
+ * Called when an L2CAP channel has been published.
+ */
+- (void)
+peripheralManager:(CBPeripheralManager *)pmgr
+didPublishL2CAPChannel:(CBL2CAPPSM)psm
+             error:(NSError *)nserr
+{
+    struct bt_error err = nserror_to_bt_error(nserr);
+    BTPeripheralManagerDidPublishL2CAPChannel(pmgr, psm, &err);
+}
+
+/**
+ * Called when an L2CAP channel has been unpublished.
+ */
+- (void)
+peripheralManager:(CBPeripheralManager *)pmgr
+didUnpublishL2CAPChannel:(CBL2CAPPSM)psm
+               error:(NSError *)nserr
+{
+    struct bt_error err = nserror_to_bt_error(nserr);
+    BTPeripheralManagerDidUnpublishL2CAPChannel(pmgr, psm, &err);
+}
+
+/**
+ * Called when a remote device opens an L2CAP channel to this peripheral.
+ */
+- (void)
+peripheralManager:(CBPeripheralManager *)pmgr
+didOpenL2CAPChannel:(CBL2CAPChannel *)channel
+          error:(NSError *)nserr
+{
+    if (channel != nil) {
+        [channel retain];
+    }
+    struct bt_error err = nserror_to_bt_error(nserr);
+    BTPeripheralManagerDidOpenL2CAPChannel(pmgr, channel, &err);
 }
 
 @end
