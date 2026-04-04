@@ -40,6 +40,9 @@ type PeripheralDelegate interface {
 
 	// DidModifyServices: https://developer.apple.com/documentation/corebluetooth/cbperipheraldelegate/1518865-peripheral
 	DidModifyServices(prph Peripheral, invSvcs []Service)
+
+	// DidOpenL2CAPChannel: https://developer.apple.com/documentation/corebluetooth/cbperipheraldelegate/2874038-peripheral
+	DidOpenL2CAPChannel(prph Peripheral, channel L2CAPChannel, err error)
 }
 
 // PeripheralDelegateBase implements the PeripheralDelegate interface with stub
@@ -73,4 +76,6 @@ func (b *PeripheralDelegateBase) DidReadRSSI(prph Peripheral, rssi int, err erro
 func (b *PeripheralDelegateBase) DidUpdateName(prph Peripheral) {
 }
 func (b *PeripheralDelegateBase) DidModifyServices(prph Peripheral, invSvcs []Service) {
+}
+func (b *PeripheralDelegateBase) DidOpenL2CAPChannel(prph Peripheral, channel L2CAPChannel, err error) {
 }

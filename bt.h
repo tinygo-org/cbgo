@@ -132,6 +132,18 @@ bool cb_prph_can_send_write_without_rsp(void *prph);
 void cb_prph_read_rssi(void *prph);
 bool cb_prph_ancs_authorized(void *prph);
 
+// l2cap.m
+void cb_prph_open_l2cap_channel(void *prph, uint16_t psm);
+uint16_t cb_l2cap_psm(void *channel);
+int cb_l2cap_read(void *channel, uint8_t *buf, int maxLen);
+int cb_l2cap_write(void *channel, const uint8_t *data, int len);
+bool cb_l2cap_has_bytes_available(void *channel);
+bool cb_l2cap_has_space_available(void *channel);
+void cb_l2cap_schedule_streams(void *channel);
+void cb_l2cap_close(void *channel);
+void cb_pmgr_publish_l2cap_channel(void *pmgr, bool encryption);
+void cb_pmgr_unpublish_l2cap_channel(void *pmgr, uint16_t psm);
+
 const char *cb_svc_uuid(void *svc);
 void *cb_svc_peripheral(void *svc);
 bool cb_svc_is_primary(void *svc);
@@ -213,6 +225,12 @@ void BTPeripheralManagerCentralDidUnsubscribe(void *pmgr, void *cent, void *chr)
 void BTPeripheralManagerIsReadyToUpdateSubscribers(void *pmgr);
 void BTPeripheralManagerDidReceiveReadRequest(void *pmgr, void *req);
 void BTPeripheralManagerDidReceiveWriteRequests(void *pmgr, struct obj_arr *oa);
+
+// cbhandlers.go (L2CAP)
+void BTPeripheralDidOpenL2CAPChannel(void *prph, void *channel, struct bt_error *err);
+void BTPeripheralManagerDidPublishL2CAPChannel(void *pmgr, uint16_t psm, struct bt_error *err);
+void BTPeripheralManagerDidUnpublishL2CAPChannel(void *pmgr, uint16_t psm, struct bt_error *err);
+void BTPeripheralManagerDidOpenL2CAPChannel(void *pmgr, void *channel, struct bt_error *err);
 
 extern dispatch_queue_t bt_queue;
 extern BTDlg *bt_dlg;

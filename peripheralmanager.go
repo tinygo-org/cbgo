@@ -153,3 +153,13 @@ func (pm PeripheralManager) RespondToRequest(req ATTRequest, result ATTError) {
 func (pm PeripheralManager) SetDesiredConnectionLatency(latency PeripheralManagerConnectionLatency, central Central) {
 	C.cb_pmgr_set_conn_latency(pm.ptr, C.int(latency), central.ptr)
 }
+
+// PublishL2CAPChannel: https://developer.apple.com/documentation/corebluetooth/cbperipheralmanager/2880158-publishl2capchannel
+func (pm PeripheralManager) PublishL2CAPChannel(encryption bool) {
+	C.cb_pmgr_publish_l2cap_channel(pm.ptr, C.bool(encryption))
+}
+
+// UnpublishL2CAPChannel: https://developer.apple.com/documentation/corebluetooth/cbperipheralmanager/2880156-unpublishl2capchannel
+func (pm PeripheralManager) UnpublishL2CAPChannel(psm uint16) {
+	C.cb_pmgr_unpublish_l2cap_channel(pm.ptr, C.uint16_t(psm))
+}

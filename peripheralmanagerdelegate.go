@@ -28,6 +28,15 @@ type PeripheralManagerDelegate interface {
 
 	// DidReceiveWriteRequests: https://developer.apple.com/documentation/corebluetooth/cbperipheralmanagerdelegate/1393315-peripheralmanager
 	DidReceiveWriteRequests(pmgr PeripheralManager, reqs []ATTRequest)
+
+	// DidPublishL2CAPChannel: https://developer.apple.com/documentation/corebluetooth/cbperipheralmanagerdelegate/2880171-peripheralmanager
+	DidPublishL2CAPChannel(pmgr PeripheralManager, psm uint16, err error)
+
+	// DidUnpublishL2CAPChannel: https://developer.apple.com/documentation/corebluetooth/cbperipheralmanagerdelegate/2880170-peripheralmanager
+	DidUnpublishL2CAPChannel(pmgr PeripheralManager, psm uint16, err error)
+
+	// DidOpenL2CAPChannel: https://developer.apple.com/documentation/corebluetooth/cbperipheralmanagerdelegate/2880172-peripheralmanager
+	DidOpenL2CAPChannel(pmgr PeripheralManager, channel L2CAPChannel, err error)
 }
 
 // PeripheralManagerDelegateBase implements the PeripheralManagerDelegate
@@ -53,4 +62,10 @@ func (b *PeripheralManagerDelegateBase) IsReadyToUpdateSubscribers(pmgr Peripher
 func (b *PeripheralManagerDelegateBase) DidReceiveReadRequest(pmgr PeripheralManager, req ATTRequest) {
 }
 func (b *PeripheralManagerDelegateBase) DidReceiveWriteRequests(pmgr PeripheralManager, reqs []ATTRequest) {
+}
+func (b *PeripheralManagerDelegateBase) DidPublishL2CAPChannel(pmgr PeripheralManager, psm uint16, err error) {
+}
+func (b *PeripheralManagerDelegateBase) DidUnpublishL2CAPChannel(pmgr PeripheralManager, psm uint16, err error) {
+}
+func (b *PeripheralManagerDelegateBase) DidOpenL2CAPChannel(pmgr PeripheralManager, channel L2CAPChannel, err error) {
 }

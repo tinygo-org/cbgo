@@ -404,3 +404,51 @@ func BTPeripheralManagerDidReceiveWriteRequests(pmgr unsafe.Pointer, oa *C.struc
 		dlg.DidReceiveWriteRequests(PeripheralManager{pmgr}, reqs)
 	}
 }
+
+//export BTPeripheralDidOpenL2CAPChannel
+func BTPeripheralDidOpenL2CAPChannel(prph unsafe.Pointer, channel unsafe.Pointer, err *C.struct_bt_error) {
+	nserr := btErrorToNSError(err)
+
+	btlog.Debugf("PeripheralDidOpenL2CAPChannel: prph=%v channel=%v err=%v", prph, channel, nserr)
+
+	dlg := findPeripheralDlg(prph)
+	if dlg != nil {
+		dlg.DidOpenL2CAPChannel(Peripheral{prph}, L2CAPChannel{channel}, nserr)
+	}
+}
+
+//export BTPeripheralManagerDidPublishL2CAPChannel
+func BTPeripheralManagerDidPublishL2CAPChannel(pmgr unsafe.Pointer, psm C.uint16_t, err *C.struct_bt_error) {
+	nserr := btErrorToNSError(err)
+
+	btlog.Debugf("PeripheralManagerDidPublishL2CAPChannel: pmgr=%v psm=%v err=%v", pmgr, psm, nserr)
+
+	dlg := findPeripheralManagerDlg(pmgr)
+	if dlg != nil {
+		dlg.DidPublishL2CAPChannel(PeripheralManager{pmgr}, uint16(psm), nserr)
+	}
+}
+
+//export BTPeripheralManagerDidUnpublishL2CAPChannel
+func BTPeripheralManagerDidUnpublishL2CAPChannel(pmgr unsafe.Pointer, psm C.uint16_t, err *C.struct_bt_error) {
+	nserr := btErrorToNSError(err)
+
+	btlog.Debugf("PeripheralManagerDidUnpublishL2CAPChannel: pmgr=%v psm=%v err=%v", pmgr, psm, nserr)
+
+	dlg := findPeripheralManagerDlg(pmgr)
+	if dlg != nil {
+		dlg.DidUnpublishL2CAPChannel(PeripheralManager{pmgr}, uint16(psm), nserr)
+	}
+}
+
+//export BTPeripheralManagerDidOpenL2CAPChannel
+func BTPeripheralManagerDidOpenL2CAPChannel(pmgr unsafe.Pointer, channel unsafe.Pointer, err *C.struct_bt_error) {
+	nserr := btErrorToNSError(err)
+
+	btlog.Debugf("PeripheralManagerDidOpenL2CAPChannel: pmgr=%v channel=%v err=%v", pmgr, channel, nserr)
+
+	dlg := findPeripheralManagerDlg(pmgr)
+	if dlg != nil {
+		dlg.DidOpenL2CAPChannel(PeripheralManager{pmgr}, L2CAPChannel{channel}, nserr)
+	}
+}

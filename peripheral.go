@@ -152,3 +152,8 @@ func (p Peripheral) CanSendWriteWithoutResponse() bool {
 func (p Peripheral) ReadRSSI() {
 	C.cb_prph_read_rssi(p.ptr)
 }
+
+// OpenL2CAPChannel: https://developer.apple.com/documentation/corebluetooth/cbperipheral/2880157-openl2capchannel
+func (p Peripheral) OpenL2CAPChannel(psm uint16) {
+	C.cb_prph_open_l2cap_channel(p.ptr, C.uint16_t(psm))
+}
