@@ -23,22 +23,32 @@ func (ch L2CAPChannel) PSM() uint16 {
 
 // Read reads up to len(buf) bytes from the L2CAP channel's input stream.
 // Returns the number of bytes read. Returns 0 if no bytes are currently
-// available, or a negative value on error.
-func (ch L2CAPChannel) Read(buf []byte) int {
+// available. Returns a negative value and an error on failure.
+func (ch L2CAPChannel) Read(buf []byte) (int, error) {
 	if len(buf) == 0 {
-		return 0
+		return 0, nil
 	}
-	return int(C.cb_l2cap_read(ch.ptr, (*C.uint8_t)(unsafe.Pointer(&buf[0])), C.int(len(buf))))
+	n := int(C.cb_l2cap_read(ch.ptr, (*C.uint8_t)(unsafe.Pointer(&buf[0])), C.int(len(buf))))
+	if n < 0 {
+		e := C.cb_l2cap_input_stream_error(ch.ptr)
+		return n, btErrorToNSError(&e)
+	}
+	return n, nil
 }
 
 // Write writes data to the L2CAP channel's output stream.
 // Returns the number of bytes written. Returns 0 if the stream has no space
-// available, or a negative value on error.
-func (ch L2CAPChannel) Write(data []byte) int {
+// available. Returns a negative value and an error on failure.
+func (ch L2CAPChannel) Write(data []byte) (int, error) {
 	if len(data) == 0 {
-		return 0
+		return 0, nil
 	}
-	return int(C.cb_l2cap_write(ch.ptr, (*C.uint8_t)(unsafe.Pointer(&data[0])), C.int(len(data))))
+	n := int(C.cb_l2cap_write(ch.ptr, (*C.uint8_t)(unsafe.Pointer(&data[0])), C.int(len(data))))
+	if n < 0 {
+		e := C.cb_l2cap_output_stream_error(ch.ptr)
+		return n, btErrorToNSError(&e)
+	}
+	return n, nil
 }
 
 // HasBytesAvailable returns true if the input stream has bytes available to read.

@@ -32,6 +32,24 @@ int cb_l2cap_write(void *channel, const uint8_t *data, int len) {
     return (int)[stream write:data maxLength:len];
 }
 
+struct bt_error cb_l2cap_input_stream_error(void *channel) {
+    CBL2CAPChannel *ch = (CBL2CAPChannel *)channel;
+    NSInputStream *stream = ch.inputStream;
+    if (stream.streamStatus == NSStreamStatusError) {
+        return nserror_to_bt_error(stream.streamError);
+    }
+    return (struct bt_error){0};
+}
+
+struct bt_error cb_l2cap_output_stream_error(void *channel) {
+    CBL2CAPChannel *ch = (CBL2CAPChannel *)channel;
+    NSOutputStream *stream = ch.outputStream;
+    if (stream.streamStatus == NSStreamStatusError) {
+        return nserror_to_bt_error(stream.streamError);
+    }
+    return (struct bt_error){0};
+}
+
 bool cb_l2cap_has_bytes_available(void *channel) {
     CBL2CAPChannel *ch = (CBL2CAPChannel *)channel;
     return [ch.inputStream hasBytesAvailable];
