@@ -139,6 +139,8 @@ int cb_l2cap_read(void *channel, uint8_t *buf, int maxLen);
 int cb_l2cap_write(void *channel, const uint8_t *data, int len);
 struct bt_error cb_l2cap_input_stream_error(void *channel);
 struct bt_error cb_l2cap_output_stream_error(void *channel);
+int cb_l2cap_input_stream_status(void *channel);
+int cb_l2cap_output_stream_status(void *channel);
 bool cb_l2cap_has_bytes_available(void *channel);
 bool cb_l2cap_has_space_available(void *channel);
 void cb_l2cap_schedule_streams(void *channel);
