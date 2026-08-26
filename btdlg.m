@@ -334,6 +334,23 @@ didOpenL2CAPChannel:(CBL2CAPChannel *)channel
 
 
 /**
+ * Called when one of an L2CAP channel's streams reports an event.
+ */
+- (void)
+    stream:(NSStream *)stream
+handleEvent:(NSStreamEvent)event
+{
+    void *channel = cb_l2cap_channel_for_stream(stream);
+    if (channel == NULL) {
+        return;
+    }
+
+    int input = [stream isKindOfClass:[NSInputStream class]] ? 1 : 0;
+    BTL2CAPChannelEvent(channel, (int)event, input);
+}
+
+
+/**
  * Called whenever the peripheral manager's state is updated.
  */
 - (void)
