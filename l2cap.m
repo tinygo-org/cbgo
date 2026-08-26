@@ -50,6 +50,16 @@ struct bt_error cb_l2cap_output_stream_error(void *channel) {
     return (struct bt_error){0};
 }
 
+int cb_l2cap_input_stream_status(void *channel) {
+    CBL2CAPChannel *ch = (CBL2CAPChannel *)channel;
+    return (int)ch.inputStream.streamStatus;
+}
+
+int cb_l2cap_output_stream_status(void *channel) {
+    CBL2CAPChannel *ch = (CBL2CAPChannel *)channel;
+    return (int)ch.outputStream.streamStatus;
+}
+
 bool cb_l2cap_has_bytes_available(void *channel) {
     CBL2CAPChannel *ch = (CBL2CAPChannel *)channel;
     return [ch.inputStream hasBytesAvailable];
