@@ -17,21 +17,18 @@ func mallocArr(numElems int, elemSize uintptr) unsafe.Pointer {
 }
 
 // getArrElemAddr retrieves the address of an element from a C array.
+//
+// The arithmetic stays in a single expression: splitting it would leave a bare
+// uintptr holding the only reference to the element, which is not something
+// the runtime tracks.
 func getArrElemAddr(arr unsafe.Pointer, elemSize uintptr, idx int) unsafe.Pointer {
-	base := uintptr(arr)
-	off := uintptr(idx) * elemSize
-	cur := base + off
-	return unsafe.Pointer(cur)
+	return unsafe.Pointer(uintptr(arr) + uintptr(idx)*elemSize)
 }
 
 // freeArrElems frees each element of a C-array of pointers.
 func freeArrElems(arr unsafe.Pointer, elemSize uintptr, count int) {
 	for i := 0; i < count; i++ {
-		base := uintptr(arr)
-		off := uintptr(i) * elemSize
-		addr := base + off
-		pp := unsafe.Pointer(addr)
-		ptr := *(*unsafe.Pointer)(pp)
+		ptr := *(*unsafe.Pointer)(getArrElemAddr(arr, elemSize, i))
 		C.free(ptr)
 	}
 }
