@@ -46,6 +46,23 @@ func (ch L2CAPChannel) PSM() uint16 {
 	return uint16(C.cb_l2cap_psm(ch.ptr))
 }
 
+// PeerIdentifier returns the identifier of the peer on the other end of this
+// channel: the peripheral the channel was opened to in the central role, or
+// the central that opened the channel in the peripheral role. It returns a nil
+// UUID if the channel has no peer.
+// peer: https://developer.apple.com/documentation/corebluetooth/cbl2capchannel/peer
+func (ch L2CAPChannel) PeerIdentifier() UUID {
+	peer := C.cb_l2cap_peer(ch.ptr)
+	if peer == nil {
+		return nil
+	}
+	cstr := C.cb_peer_identifier(peer)
+	if cstr == nil {
+		return nil
+	}
+	return MustParseUUID(C.GoString(cstr))
+}
+
 // InputStreamStatus returns the current state of the channel's input stream.
 func (ch L2CAPChannel) InputStreamStatus() StreamStatus {
 	return StreamStatus(C.cb_l2cap_input_stream_status(ch.ptr))

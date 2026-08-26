@@ -14,6 +14,11 @@ uint16_t cb_l2cap_psm(void *channel) {
     return ch.PSM;
 }
 
+void *cb_l2cap_peer(void *channel) {
+    CBL2CAPChannel *ch = (CBL2CAPChannel *)channel;
+    return ch.peer;
+}
+
 int cb_l2cap_read(void *channel, uint8_t *buf, int maxLen) {
     CBL2CAPChannel *ch = (CBL2CAPChannel *)channel;
     NSInputStream *stream = ch.inputStream;
