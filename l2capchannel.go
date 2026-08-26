@@ -35,6 +35,32 @@ const (
 	StreamStatusError   StreamStatus = 7
 )
 
+// StreamEvent describes an event reported by one of an L2CAP channel's
+// streams.
+// StreamEvent: https://developer.apple.com/documentation/foundation/stream/event
+type StreamEvent int
+
+const (
+	StreamEventOpenCompleted     StreamEvent = 1 << 0
+	StreamEventHasBytesAvailable StreamEvent = 1 << 1
+	StreamEventHasSpaceAvailable StreamEvent = 1 << 2
+	StreamEventErrorOccurred     StreamEvent = 1 << 3
+	StreamEventEndEncountered    StreamEvent = 1 << 4
+)
+
+// l2capHandlers maps a channel to the handler registered for its stream events.
+var l2capHandlers = newPtrMap()
+
+func findL2CAPHandler(p unsafe.Pointer) func(StreamEvent, bool) {
+	itf := l2capHandlers.find(p)
+	if itf == nil {
+		return nil
+	}
+
+	fn, _ := itf.(func(StreamEvent, bool))
+	return fn
+}
+
 // L2CAPChannel: https://developer.apple.com/documentation/corebluetooth/cbl2capchannel
 type L2CAPChannel struct {
 	ptr unsafe.Pointer
@@ -131,9 +157,27 @@ func (ch L2CAPChannel) HasSpaceAvailable() bool {
 	return bool(C.cb_l2cap_has_space_available(ch.ptr))
 }
 
+// SetEventHandler registers fn to be called whenever one of the channel's
+// streams reports an event, with input reporting whether the event came from
+// the input stream. It replaces any handler already registered; pass nil to
+// remove it.
+//
+// fn runs on the same internal queue that delivers CoreBluetooth's delegate
+// callbacks, so it must not block. Signal a waiting goroutine instead of doing
+// work inside it.
+func (ch L2CAPChannel) SetEventHandler(fn func(event StreamEvent, input bool)) {
+	if fn == nil {
+		l2capHandlers.del(ch.ptr)
+		return
+	}
+
+	l2capHandlers.add(ch.ptr, fn)
+}
+
 // Close closes the L2CAP channel's input and output streams. It is safe to
 // call more than once, and the channel's other methods remain safe to call
 // afterwards.
 func (ch L2CAPChannel) Close() {
+	l2capHandlers.del(ch.ptr)
 	C.cb_l2cap_close(ch.ptr)
 }

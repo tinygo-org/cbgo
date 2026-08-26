@@ -69,7 +69,7 @@ struct pmgr_restore_opts {
     struct adv_data *adv_data;
 };
 
-@interface BTDlg : NSObject <CBCentralManagerDelegate, CBPeripheralManagerDelegate, CBPeripheralDelegate>
+@interface BTDlg : NSObject <CBCentralManagerDelegate, CBPeripheralManagerDelegate, CBPeripheralDelegate, NSStreamDelegate>
 {
 }
 @end
@@ -145,6 +145,7 @@ int cb_l2cap_output_stream_status(void *channel);
 bool cb_l2cap_has_bytes_available(void *channel);
 bool cb_l2cap_has_space_available(void *channel);
 void cb_l2cap_schedule_streams(void *channel);
+void *cb_l2cap_channel_for_stream(void *stream);
 void cb_l2cap_close(void *channel);
 void cb_pmgr_publish_l2cap_channel(void *pmgr, bool encryption);
 void cb_pmgr_unpublish_l2cap_channel(void *pmgr, uint16_t psm);
@@ -236,6 +237,7 @@ void BTPeripheralDidOpenL2CAPChannel(void *prph, void *channel, struct bt_error 
 void BTPeripheralManagerDidPublishL2CAPChannel(void *pmgr, uint16_t psm, struct bt_error *err);
 void BTPeripheralManagerDidUnpublishL2CAPChannel(void *pmgr, uint16_t psm, struct bt_error *err);
 void BTPeripheralManagerDidOpenL2CAPChannel(void *pmgr, void *channel, struct bt_error *err);
+void BTL2CAPChannelEvent(void *channel, int event, int input);
 
 extern dispatch_queue_t bt_queue;
 extern BTDlg *bt_dlg;

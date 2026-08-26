@@ -441,6 +441,16 @@ func BTPeripheralManagerDidUnpublishL2CAPChannel(pmgr unsafe.Pointer, psm C.uint
 	}
 }
 
+//export BTL2CAPChannelEvent
+func BTL2CAPChannelEvent(channel unsafe.Pointer, event C.int, input C.int) {
+	btlog.Debugf("L2CAPChannelEvent: channel=%v event=%v input=%v", channel, event, input)
+
+	fn := findL2CAPHandler(channel)
+	if fn != nil {
+		fn(StreamEvent(event), input != 0)
+	}
+}
+
 //export BTPeripheralManagerDidOpenL2CAPChannel
 func BTPeripheralManagerDidOpenL2CAPChannel(pmgr unsafe.Pointer, channel unsafe.Pointer, err *C.struct_bt_error) {
 	nserr := btErrorToNSError(err)
