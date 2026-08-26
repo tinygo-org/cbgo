@@ -7,8 +7,17 @@ package cbgo
 import "C"
 
 import (
+	"errors"
 	"unsafe"
 )
+
+// ErrL2CAPRead is returned by L2CAPChannel.Read when the input stream fails
+// but reports no underlying error.
+var ErrL2CAPRead = errors.New("cbgo: l2cap input stream read failed")
+
+// ErrL2CAPWrite is returned by L2CAPChannel.Write when the output stream fails
+// but reports no underlying error.
+var ErrL2CAPWrite = errors.New("cbgo: l2cap output stream write failed")
 
 // L2CAPChannel: https://developer.apple.com/documentation/corebluetooth/cbl2capchannel
 type L2CAPChannel struct {
@@ -22,8 +31,8 @@ func (ch L2CAPChannel) PSM() uint16 {
 }
 
 // Read reads up to len(buf) bytes from the L2CAP channel's input stream.
-// Returns the number of bytes read. Returns 0 if no bytes are currently
-// available. Returns a negative value and an error on failure.
+// It returns the number of bytes read, which is 0 if no bytes are currently
+// available. On failure it returns 0 and a non-nil error.
 func (ch L2CAPChannel) Read(buf []byte) (int, error) {
 	if len(buf) == 0 {
 		return 0, nil
@@ -31,14 +40,17 @@ func (ch L2CAPChannel) Read(buf []byte) (int, error) {
 	n := int(C.cb_l2cap_read(ch.ptr, (*C.uint8_t)(unsafe.Pointer(&buf[0])), C.int(len(buf))))
 	if n < 0 {
 		e := C.cb_l2cap_input_stream_error(ch.ptr)
-		return n, btErrorToNSError(&e)
+		if err := btErrorToNSError(&e); err != nil {
+			return 0, err
+		}
+		return 0, ErrL2CAPRead
 	}
 	return n, nil
 }
 
 // Write writes data to the L2CAP channel's output stream.
-// Returns the number of bytes written. Returns 0 if the stream has no space
-// available. Returns a negative value and an error on failure.
+// It returns the number of bytes written, which is 0 if the stream has no
+// space available. On failure it returns 0 and a non-nil error.
 func (ch L2CAPChannel) Write(data []byte) (int, error) {
 	if len(data) == 0 {
 		return 0, nil
@@ -46,7 +58,10 @@ func (ch L2CAPChannel) Write(data []byte) (int, error) {
 	n := int(C.cb_l2cap_write(ch.ptr, (*C.uint8_t)(unsafe.Pointer(&data[0])), C.int(len(data))))
 	if n < 0 {
 		e := C.cb_l2cap_output_stream_error(ch.ptr)
-		return n, btErrorToNSError(&e)
+		if err := btErrorToNSError(&e); err != nil {
+			return 0, err
+		}
+		return 0, ErrL2CAPWrite
 	}
 	return n, nil
 }
