@@ -79,6 +79,10 @@ void cb_l2cap_schedule_streams(void *channel) {
     [ch.outputStream open];
 }
 
+// The channel is retained when the delegate hands it to Go and is never
+// released, matching how every other CoreBluetooth object crossing this
+// boundary is owned. Closing only tears down the streams, so the pointer Go
+// holds stays valid and every method remains safe to call afterwards.
 void cb_l2cap_close(void *channel) {
     CBL2CAPChannel *ch = (CBL2CAPChannel *)channel;
     NSRunLoop *rl = [NSRunLoop mainRunLoop];
@@ -86,7 +90,6 @@ void cb_l2cap_close(void *channel) {
     [ch.outputStream close];
     [ch.inputStream removeFromRunLoop:rl forMode:NSDefaultRunLoopMode];
     [ch.outputStream removeFromRunLoop:rl forMode:NSDefaultRunLoopMode];
-    [ch release];
 }
 
 void cb_pmgr_publish_l2cap_channel(void *pmgr, bool encryption) {

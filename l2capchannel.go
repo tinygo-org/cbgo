@@ -114,7 +114,9 @@ func (ch L2CAPChannel) HasSpaceAvailable() bool {
 	return bool(C.cb_l2cap_has_space_available(ch.ptr))
 }
 
-// Close closes the L2CAP channel's input and output streams.
+// Close closes the L2CAP channel's input and output streams. It is safe to
+// call more than once, and the channel's other methods remain safe to call
+// afterwards.
 func (ch L2CAPChannel) Close() {
 	C.cb_l2cap_close(ch.ptr)
 }
