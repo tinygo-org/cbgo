@@ -64,6 +64,7 @@ nserror_to_bt_error(const NSError *err)
     } else {
         return (struct bt_error) {
             .msg = [err.localizedDescription UTF8String],
+            .domain = [err.domain UTF8String],
             .code = err.code,
         };
     }

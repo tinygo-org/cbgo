@@ -24,6 +24,7 @@ struct obj_arr {
 
 struct bt_error {
     const char *msg;
+    const char *domain;
     int code;
 };
 

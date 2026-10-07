@@ -134,8 +134,9 @@ func btErrorToNSError(e *C.struct_bt_error) error {
 		return nil
 	} else {
 		return &NSError{
-			msg:  C.GoString(e.msg),
-			code: int(e.code),
+			msg:    C.GoString(e.msg),
+			domain: C.GoString(e.domain),
+			code:   int(e.code),
 		}
 	}
 }

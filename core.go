@@ -133,8 +133,9 @@ func (u UUID) String() string {
 
 // NSError: https://developer.apple.com/documentation/foundation/nserror
 type NSError struct {
-	msg  string
-	code int
+	msg    string
+	domain string
+	code   int
 }
 
 func (e *NSError) Message() string {
@@ -142,6 +143,12 @@ func (e *NSError) Message() string {
 }
 func (e *NSError) Code() int {
 	return e.code
+}
+
+// Domain returns the error domain, such as CBATTErrorDomain or CBErrorDomain.
+// Code is only meaningful within its domain.
+func (e *NSError) Domain() string {
+	return e.domain
 }
 func (e *NSError) Error() string {
 	return e.msg
