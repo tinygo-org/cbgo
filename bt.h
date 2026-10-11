@@ -79,6 +79,8 @@ struct pmgr_restore_opts {
 bool bt_start();
 void bt_stop();
 void bt_init();
+void *bt_pool_push();
+void bt_pool_pop(void *pool);
 
 // util.m
 struct byte_arr nsdata_to_byte_arr(const NSData *nsdata);

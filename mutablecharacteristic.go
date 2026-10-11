@@ -15,6 +15,7 @@ type MutableCharacteristic struct {
 
 func NewMutableCharacteristic(uuid UUID, properties CharacteristicProperties,
 	value []byte, permissions AttributePermissions) MutableCharacteristic {
+	defer popPool(pushPool())
 
 	cuuid := C.CString(uuid.String())
 	defer C.free(unsafe.Pointer(cuuid))
@@ -35,6 +36,8 @@ func (c MutableCharacteristic) Characteristic() Characteristic {
 
 // SetDescriptors: https://developer.apple.com/documentation/corebluetooth/cbmutablecharacteristic/1518827-descriptors
 func (c MutableCharacteristic) SetDescriptors(mdscs []MutableDescriptor) {
+	defer popPool(pushPool())
+
 	dscs := mallocObjArr(len(mdscs))
 	defer C.free(unsafe.Pointer(dscs.objs))
 
@@ -47,6 +50,8 @@ func (c MutableCharacteristic) SetDescriptors(mdscs []MutableDescriptor) {
 
 // SetValue: https://developer.apple.com/documentation/corebluetooth/cbmutablecharacteristic/1519121-value
 func (c MutableCharacteristic) SetValue(val []byte) {
+	defer popPool(pushPool())
+
 	ba := byteSliceToByteArr(val)
 	defer C.free(unsafe.Pointer(ba.data))
 

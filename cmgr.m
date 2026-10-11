@@ -57,7 +57,6 @@ cb_cmgr_scan(void *cmgr, const struct string_arr *svc_uuids,
              const struct scan_opts *opts)
 {
     NSArray *arr_svc_uuids = strs_to_cbuuids(svc_uuids);
-    [arr_svc_uuids autorelease];
 
     NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
     [dict autorelease];
@@ -69,7 +68,6 @@ cb_cmgr_scan(void *cmgr, const struct string_arr *svc_uuids,
 
     if (opts->sol_svc_uuids.count > 0) {
         NSArray *arr_sol_svc_uuids = strs_to_cbuuids(&opts->sol_svc_uuids);
-        [arr_sol_svc_uuids autorelease];
 
         [dict setObject:arr_sol_svc_uuids
                  forKey:CBCentralManagerScanOptionSolicitedServiceUUIDsKey];
@@ -150,8 +148,10 @@ cb_cmgr_retrieve_prphs_with_svcs(void *cmgr, const struct string_arr *uuids)
     void **objs = malloc([prphs count] * sizeof *objs);
     assert(objs != NULL);
 
+    // Go keeps these after the pool releases the array, so each one is
+    // retained like a peripheral the delegate hands to Go.
     for (int i = 0; i < [prphs count]; i++) {
-        objs[i] = [prphs objectAtIndex:i];
+        objs[i] = [[prphs objectAtIndex:i] retain];
     }
 
     return (struct obj_arr) {
@@ -175,8 +175,10 @@ cb_cmgr_retrieve_prphs(void *cmgr, const struct string_arr *uuids)
     void **objs = malloc([prphs count] * sizeof *objs);
     assert(objs != NULL);
 
+    // Go keeps these after the pool releases the array, so each one is
+    // retained like a peripheral the delegate hands to Go.
     for (int i = 0; i < [prphs count]; i++) {
-        objs[i] = [prphs objectAtIndex:i];
+        objs[i] = [[prphs objectAtIndex:i] retain];
     }
 
     return (struct obj_arr) {

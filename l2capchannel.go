@@ -69,6 +69,8 @@ type L2CAPChannel struct {
 // PSM returns the channel's Protocol/Service Multiplexer identifier.
 // PSM: https://developer.apple.com/documentation/corebluetooth/cbl2capchannel/2880155-psm
 func (ch L2CAPChannel) PSM() uint16 {
+	defer popPool(pushPool())
+
 	return uint16(C.cb_l2cap_psm(ch.ptr))
 }
 
@@ -78,6 +80,8 @@ func (ch L2CAPChannel) PSM() uint16 {
 // UUID if the channel has no peer.
 // peer: https://developer.apple.com/documentation/corebluetooth/cbl2capchannel/peer
 func (ch L2CAPChannel) PeerIdentifier() UUID {
+	defer popPool(pushPool())
+
 	peer := C.cb_l2cap_peer(ch.ptr)
 	if peer == nil {
 		return nil
@@ -91,11 +95,15 @@ func (ch L2CAPChannel) PeerIdentifier() UUID {
 
 // InputStreamStatus returns the current state of the channel's input stream.
 func (ch L2CAPChannel) InputStreamStatus() StreamStatus {
+	defer popPool(pushPool())
+
 	return StreamStatus(C.cb_l2cap_input_stream_status(ch.ptr))
 }
 
 // OutputStreamStatus returns the current state of the channel's output stream.
 func (ch L2CAPChannel) OutputStreamStatus() StreamStatus {
+	defer popPool(pushPool())
+
 	return StreamStatus(C.cb_l2cap_output_stream_status(ch.ptr))
 }
 
@@ -104,6 +112,8 @@ func (ch L2CAPChannel) OutputStreamStatus() StreamStatus {
 // currently available. It returns io.EOF once the remote end has closed the
 // stream. On failure it returns 0 and a non-nil error.
 func (ch L2CAPChannel) Read(buf []byte) (int, error) {
+	defer popPool(pushPool())
+
 	if len(buf) == 0 {
 		return 0, nil
 	}
@@ -127,6 +137,8 @@ func (ch L2CAPChannel) Read(buf []byte) (int, error) {
 // stream can no longer accept data. On failure it returns 0 and a non-nil
 // error.
 func (ch L2CAPChannel) Write(data []byte) (int, error) {
+	defer popPool(pushPool())
+
 	if len(data) == 0 {
 		return 0, nil
 	}
@@ -149,11 +161,15 @@ func (ch L2CAPChannel) Write(data []byte) (int, error) {
 
 // HasBytesAvailable returns true if the input stream has bytes available to read.
 func (ch L2CAPChannel) HasBytesAvailable() bool {
+	defer popPool(pushPool())
+
 	return bool(C.cb_l2cap_has_bytes_available(ch.ptr))
 }
 
 // HasSpaceAvailable returns true if the output stream has space available for writing.
 func (ch L2CAPChannel) HasSpaceAvailable() bool {
+	defer popPool(pushPool())
+
 	return bool(C.cb_l2cap_has_space_available(ch.ptr))
 }
 
@@ -178,6 +194,8 @@ func (ch L2CAPChannel) SetEventHandler(fn func(event StreamEvent, input bool)) {
 // call more than once, and the channel's other methods remain safe to call
 // afterwards.
 func (ch L2CAPChannel) Close() {
+	defer popPool(pushPool())
+
 	l2capHandlers.del(ch.ptr)
 	C.cb_l2cap_close(ch.ptr)
 }

@@ -48,24 +48,32 @@ type ATTRequest struct {
 
 // Central: https://developer.apple.com/documentation/corebluetooth/cbattrequest/1518995-central
 func (r ATTRequest) Central() Central {
+	defer popPool(pushPool())
+
 	ptr := C.cb_atr_central(r.ptr)
 	return Central{unsafe.Pointer(ptr)}
 }
 
 // Characteristic: https://developer.apple.com/documentation/corebluetooth/cbattrequest/1518716-characteristic
 func (r ATTRequest) Characteristic() Characteristic {
+	defer popPool(pushPool())
+
 	ptr := C.cb_atr_characteristic(r.ptr)
 	return Characteristic{unsafe.Pointer(ptr)}
 }
 
 // Value: https://developer.apple.com/documentation/corebluetooth/cbattrequest/1518795-value
 func (r ATTRequest) Value() []byte {
+	defer popPool(pushPool())
+
 	ba := C.cb_atr_value(r.ptr)
 	return byteArrToByteSlice(&ba)
 }
 
 // SetValue: https://developer.apple.com/documentation/corebluetooth/cbattrequest/1518795-value
 func (r ATTRequest) SetValue(v []byte) {
+	defer popPool(pushPool())
+
 	ba := byteSliceToByteArr(v)
 	defer C.free(unsafe.Pointer(ba.data))
 
@@ -74,5 +82,7 @@ func (r ATTRequest) SetValue(v []byte) {
 
 // Offset: https://developer.apple.com/documentation/corebluetooth/cbattrequest/1518857-offset
 func (r ATTRequest) Offset() int {
+	defer popPool(pushPool())
+
 	return int(C.cb_atr_offset(r.ptr))
 }

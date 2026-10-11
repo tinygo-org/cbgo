@@ -14,6 +14,8 @@ type MutableService struct {
 }
 
 func NewMutableService(uuid UUID, primary bool) MutableService {
+	defer popPool(pushPool())
+
 	cuuid := C.CString(uuid.String())
 	defer C.free(unsafe.Pointer(cuuid))
 
@@ -29,6 +31,8 @@ func (s MutableService) Service() Service {
 
 // SetCharacteristics: https://developer.apple.com/documentation/corebluetooth/cbmutableservice/1434317-characteristics
 func (s MutableService) SetCharacteristics(mchrs []MutableCharacteristic) {
+	defer popPool(pushPool())
+
 	chrs := mallocObjArr(len(mchrs))
 	defer C.free(unsafe.Pointer(chrs.objs))
 
@@ -41,6 +45,8 @@ func (s MutableService) SetCharacteristics(mchrs []MutableCharacteristic) {
 
 // SetIncludedServices: https://developer.apple.com/documentation/corebluetooth/cbmutableservice/1434320-includedservices
 func (s MutableService) SetIncludedServices(msvcs []MutableService) {
+	defer popPool(pushPool())
+
 	svcs := mallocObjArr(len(msvcs))
 	defer C.free(unsafe.Pointer(svcs.objs))
 

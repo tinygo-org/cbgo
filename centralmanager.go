@@ -64,6 +64,8 @@ func findCentralManagerDlg(ptr unsafe.Pointer) CentralManagerDelegate {
 // NewCentralManager creates a central manager.  Specify a nil `opts` value for
 // defaults.  Don't forget to call `SetDelegate()` afterwards!
 func NewCentralManager(opts *ManagerOpts) CentralManager {
+	defer popPool(pushPool())
+
 	if opts == nil {
 		opts = &DfltManagerOpts
 	}
@@ -84,6 +86,8 @@ func NewCentralManager(opts *ManagerOpts) CentralManager {
 // SetDelegate configures a receiver for a central manager's asynchronous
 // callbacks.
 func (cm CentralManager) SetDelegate(d CentralManagerDelegate) {
+	defer popPool(pushPool())
+
 	if d != nil {
 		cmgrPtrMap.add(cm.ptr, d)
 	}
@@ -92,11 +96,15 @@ func (cm CentralManager) SetDelegate(d CentralManagerDelegate) {
 
 // State: https://developer.apple.com/documentation/corebluetooth/cbmanager/1648600-state
 func (cm CentralManager) State() ManagerState {
+	defer popPool(pushPool())
+
 	return ManagerState(C.cb_cmgr_state(cm.ptr))
 }
 
 // Connect: https://developer.apple.com/documentation/corebluetooth/cbcentralmanager/1518766-connectperipheral
 func (cm CentralManager) Connect(prph Peripheral, opts *CentralManagerConnectOpts) {
+	defer popPool(pushPool())
+
 	if opts == nil {
 		opts = &DfltCentralManagerConnectOpts
 	}
@@ -115,11 +123,15 @@ func (cm CentralManager) Connect(prph Peripheral, opts *CentralManagerConnectOpt
 
 // CancelConnect: https://developer.apple.com/documentation/corebluetooth/cbcentralmanager/1518952-cancelperipheralconnection
 func (cm CentralManager) CancelConnect(prph Peripheral) {
+	defer popPool(pushPool())
+
 	C.cb_cmgr_cancel_connect(cm.ptr, prph.ptr)
 }
 
 // RetrieveConnectedPeripheralsWithServices: https://developer.apple.com/documentation/corebluetooth/cbcentralmanager/1518924-retrieveconnectedperipheralswith
 func (cm CentralManager) RetrieveConnectedPeripheralsWithServices(uuids []UUID) []Peripheral {
+	defer popPool(pushPool())
+
 	strs := uuidsToStrArr(uuids)
 	defer freeStrArr(&strs)
 
@@ -138,6 +150,8 @@ func (cm CentralManager) RetrieveConnectedPeripheralsWithServices(uuids []UUID) 
 
 // RetrievePeripheralsWithIdentifiers: https://developer.apple.com/documentation/corebluetooth/cbcentralmanager/1519127-retrieveperipheralswithidentifie
 func (cm CentralManager) RetrievePeripheralsWithIdentifiers(uuids []UUID) []Peripheral {
+	defer popPool(pushPool())
+
 	strs := uuidsToStrArr(uuids)
 	defer freeStrArr(&strs)
 
@@ -156,6 +170,8 @@ func (cm CentralManager) RetrievePeripheralsWithIdentifiers(uuids []UUID) []Peri
 
 // Scan: https://developer.apple.com/documentation/corebluetooth/cbcentralmanager/1518986-scanforperipheralswithservices
 func (cm CentralManager) Scan(serviceUUIDs []UUID, opts *CentralManagerScanOpts) {
+	defer popPool(pushPool())
+
 	arrSvcUUIDs := uuidsToStrArr(serviceUUIDs)
 	defer freeStrArr(&arrSvcUUIDs)
 
@@ -176,10 +192,14 @@ func (cm CentralManager) Scan(serviceUUIDs []UUID, opts *CentralManagerScanOpts)
 
 // StopScan: https://developer.apple.com/documentation/corebluetooth/cbcentralmanager/1518984-stopscan
 func (cm CentralManager) StopScan() {
+	defer popPool(pushPool())
+
 	C.cb_cmgr_stop_scan(cm.ptr)
 }
 
 // IsScanning: https://developer.apple.com/documentation/corebluetooth/cbcentralmanager/1620640-isscanning
 func (cm CentralManager) IsScanning() bool {
+	defer popPool(pushPool())
+
 	return bool(C.cb_cmgr_is_scanning(cm.ptr))
 }

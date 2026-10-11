@@ -9,8 +9,28 @@ package cbgo
 import "C"
 
 import (
+	"runtime"
 	"unsafe"
 )
+
+// pushPool pushes an autorelease pool for a call into Objective-C, and locks
+// the goroutine to its thread until popPool drains it: a pool belongs to the
+// thread that pushed it. Every function that calls into Objective-C starts
+// with
+//
+//	defer popPool(pushPool())
+//
+// so that what the call autoreleases is released when it returns, after the
+// function has copied any C string or bytes that point into those objects.
+func pushPool() unsafe.Pointer {
+	runtime.LockOSThread()
+	return C.bt_pool_push()
+}
+
+func popPool(pool unsafe.Pointer) {
+	C.bt_pool_pop(pool)
+	runtime.UnlockOSThread()
+}
 
 func mallocArr(numElems int, elemSize uintptr) unsafe.Pointer {
 	return C.malloc(C.size_t(numElems) * C.size_t(elemSize))

@@ -58,3 +58,20 @@ bt_init()
     bt_dlg = [[BTDlg alloc] init];
     [bt_dlg retain];
 }
+
+/**
+ * Pushes an autorelease pool on the calling thread.  Go threads have none, so
+ * an object autoreleased by a call from Go stays allocated until bt_pool_pop
+ * drains the pool this returns.
+ */
+void *
+bt_pool_push()
+{
+    return [[NSAutoreleasePool alloc] init];
+}
+
+void
+bt_pool_pop(void *pool)
+{
+    [(NSAutoreleasePool *)pool drain];
+}

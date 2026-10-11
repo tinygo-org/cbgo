@@ -15,11 +15,15 @@ type Central struct {
 
 // Identifier: https://developer.apple.com/documentation/corebluetooth/cbpeer/1620687-identifier
 func (c Central) Identifier() UUID {
+	defer popPool(pushPool())
+
 	cstr := C.cb_peer_identifier(c.ptr)
 	return MustParseUUID(C.GoString(cstr))
 }
 
 // MaximumUpdateValueLength: https://developer.apple.com/documentation/corebluetooth/cbcentral/1408800-maximumupdatevaluelength
 func (c Central) MaximumUpdateValueLength() int {
+	defer popPool(pushPool())
+
 	return int(C.cb_cent_maximum_update_len(c.ptr))
 }
