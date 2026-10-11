@@ -71,13 +71,18 @@ func startsWithPool(body *ast.BlockStmt) bool {
 	return ok && types.ExprString(d.Call) == "popPool(pushPool())"
 }
 
-// calls is how many times a test repeats a call to see what it leaves behind.
-const calls = 10000
+// A test repeats a call in batches to see what it leaves behind.
+const (
+	batches = 5
+	calls   = 2000 // per batch
+)
 
 // releases fails the test if calling fn leaves objects on the C heap. An
 // object left in an autorelease pool costs at least its 8-byte pool slot, so
-// a call that leaks one leaves 8 bytes or more each time. Calls that leak
-// nothing leave about 1 KB in all, so the bound is 1 byte per call.
+// a call that leaks one leaves 8 bytes or more each time, in every batch. The
+// allocator's own count also moves, now and then and in 16 KiB steps on
+// arm64, but not in every batch: a test fails only when every batch left more
+// than 1 byte per call.
 func releases(t *testing.T, fn func()) {
 	t.Helper()
 
@@ -85,12 +90,18 @@ func releases(t *testing.T, fn func()) {
 	defer runtime.UnlockOSThread()
 
 	fn() // The first call fills caches that every later call shares.
-	before := heap.InUse()
-	for i := 0; i < calls; i++ {
-		fn()
+	least := -1
+	for b := 0; b < batches; b++ {
+		before := heap.InUse()
+		for i := 0; i < calls; i++ {
+			fn()
+		}
+		if left := heap.InUse() - before; least < 0 || left < least {
+			least = left
+		}
 	}
-	if left := heap.InUse() - before; left > calls {
-		t.Errorf("%d calls left %d bytes on the C heap (%d per call)", calls, left, left/calls)
+	if least > calls {
+		t.Errorf("each batch of %d calls left at least %d bytes on the C heap (%d per call)", calls, least, least/calls)
 	}
 }
 
