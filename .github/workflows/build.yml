@@ -20,3 +20,7 @@ jobs:
 
       - name: vet
         run: go vet ./...
+
+      # The tests need no Bluetooth controller.
+      - name: test
+        run: go test ./...

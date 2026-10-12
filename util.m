@@ -53,7 +53,8 @@ obj_arr_to_nsarray(const struct obj_arr *oa)
 NSString *
 str_to_nsstring(const char *s)
 {
-    return [[NSString alloc] initWithCString:s encoding:NSUTF8StringEncoding];
+    NSString *nss = [[NSString alloc] initWithCString:s encoding:NSUTF8StringEncoding];
+    return [nss autorelease];
 }
 
 struct bt_error
@@ -74,7 +75,8 @@ NSUUID *
 str_to_nsuuid(const char *s)
 {
     NSString *nss = str_to_nsstring(s);
-    return [[NSUUID alloc] initWithUUIDString:nss];
+    NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:nss];
+    return [uuid autorelease];
 }
 
 CBUUID *

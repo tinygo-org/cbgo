@@ -39,24 +39,32 @@ type Characteristic struct {
 
 // UUID: https://developer.apple.com/documentation/corebluetooth/cbattribute/1620638-uuid
 func (c Characteristic) UUID() UUID {
+	defer popPool(pushPool())
+
 	cstr := C.cb_chr_uuid(c.ptr)
 	return MustParseUUID(C.GoString(cstr))
 }
 
 // Service: https://developer.apple.com/documentation/corebluetooth/cbcharacteristic/1518728-service
 func (c Characteristic) Service() Service {
+	defer popPool(pushPool())
+
 	ptr := C.cb_chr_service(c.ptr)
 	return Service{ptr}
 }
 
 // Value: https://developer.apple.com/documentation/corebluetooth/cbcharacteristic/1518878-value
 func (c Characteristic) Value() []byte {
+	defer popPool(pushPool())
+
 	ba := C.cb_chr_value(c.ptr)
 	return byteArrToByteSlice(&ba)
 }
 
 // Descriptors: https://developer.apple.com/documentation/corebluetooth/cbcharacteristic/1518957-descriptors
 func (c Characteristic) Descriptors() []Descriptor {
+	defer popPool(pushPool())
+
 	oa := C.cb_chr_descriptors(c.ptr)
 	defer C.free(unsafe.Pointer(oa.objs))
 
@@ -71,10 +79,14 @@ func (c Characteristic) Descriptors() []Descriptor {
 
 // Properties: https://developer.apple.com/documentation/corebluetooth/cbcharacteristic/1519010-properties
 func (c Characteristic) Properties() CharacteristicProperties {
+	defer popPool(pushPool())
+
 	return CharacteristicProperties(C.cb_chr_properties(c.ptr))
 }
 
 // IsNotifying: https://developer.apple.com/documentation/corebluetooth/cbcharacteristic/1519057-isnotifying
 func (c Characteristic) IsNotifying() bool {
+	defer popPool(pushPool())
+
 	return bool(C.cb_chr_is_notifying(c.ptr))
 }

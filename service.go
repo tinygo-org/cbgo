@@ -15,23 +15,31 @@ type Service struct {
 
 // UUID: https://developer.apple.com/documentation/corebluetooth/cbattribute/1620638-uuid
 func (s Service) UUID() UUID {
+	defer popPool(pushPool())
+
 	cstr := C.cb_svc_uuid(s.ptr)
 	return MustParseUUID(C.GoString(cstr))
 }
 
 // Peripheral: https://developer.apple.com/documentation/corebluetooth/cbservice/1434334-peripheral
 func (s Service) Peripheral() Peripheral {
+	defer popPool(pushPool())
+
 	prphPtr := C.cb_svc_peripheral(s.ptr)
 	return Peripheral{prphPtr}
 }
 
 // IsPrimary: https://developer.apple.com/documentation/corebluetooth/cbservice/1434326-isprimary
 func (s Service) IsPrimary() bool {
+	defer popPool(pushPool())
+
 	return bool(C.cb_svc_is_primary(s.ptr))
 }
 
 // Characteristics: https://developer.apple.com/documentation/corebluetooth/cbservice/1434319-characteristics
 func (s Service) Characteristics() []Characteristic {
+	defer popPool(pushPool())
+
 	oa := C.cb_svc_characteristics(s.ptr)
 	defer C.free(unsafe.Pointer(oa.objs))
 
@@ -46,6 +54,8 @@ func (s Service) Characteristics() []Characteristic {
 
 // IncludedServices: https://developer.apple.com/documentation/corebluetooth/cbservice/1434324-includedservices
 func (s Service) IncludedServices() []Service {
+	defer popPool(pushPool())
+
 	oa := C.cb_svc_included_svcs(s.ptr)
 	defer C.free(unsafe.Pointer(oa.objs))
 

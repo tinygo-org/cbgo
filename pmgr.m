@@ -78,13 +78,11 @@ cb_pmgr_start_adv(void *pmgr, const struct adv_data *ad)
     // iBeacon data is mutually exclusing with the rest of the fields.
     if (ad->ibeacon_data.length > 0) {
         NSData *nsd = byte_arr_to_nsdata(&ad->ibeacon_data);
-        [nsd autorelease];
 
         [dict setObject:nsd forKey:@"kCBAdvDataAppleBeaconKey"];
     } else {
         if (ad->name != NULL) {
             NSString *nss = str_to_nsstring(ad->name);
-            [nss autorelease];
 
             [dict setObject:nss
                      forKey:CBAdvertisementDataLocalNameKey];
@@ -92,7 +90,6 @@ cb_pmgr_start_adv(void *pmgr, const struct adv_data *ad)
 
         if (ad->svc_uuids.count > 0) {
             NSArray *arr_svc_uuids = strs_to_cbuuids(&ad->svc_uuids);
-            [arr_svc_uuids autorelease];
 
             [dict setObject:arr_svc_uuids
                      forKey:CBAdvertisementDataServiceUUIDsKey];
@@ -118,10 +115,7 @@ bool
 cb_pmgr_update_val(void *pmgr, const struct byte_arr *value, void *chr, const struct obj_arr *centrals)
 {
     NSData *nsd = byte_arr_to_nsdata(value);
-    [nsd autorelease];
-
     NSArray *nsa = obj_arr_to_nsarray(centrals);
-    [nsa autorelease];
 
     return [(CBPeripheralManager *)pmgr updateValue:nsd
                                   forCharacteristic:chr
@@ -161,7 +155,6 @@ void
 cb_msvc_set_characteristics(void *msvc, const struct obj_arr *mchrs)
 {
     NSArray *nsa = obj_arr_to_nsarray(mchrs);
-    [nsa autorelease];
 
     ((CBMutableService *)msvc).characteristics = nsa;
 }
@@ -170,7 +163,6 @@ void
 cb_msvc_set_included_services(void *msvc, const struct obj_arr *msvcs)
 {
     NSArray *nsa = obj_arr_to_nsarray(msvcs);
-    [nsa autorelease];
 
     ((CBMutableService *)msvc).includedServices = nsa;
 }
@@ -194,7 +186,6 @@ void
 cb_mchr_set_descriptors(void *mchr, const struct obj_arr *mdscs)
 {
     NSArray *nsa = obj_arr_to_nsarray(mdscs);
-    [nsa autorelease];
 
     ((CBMutableCharacteristic *)mchr).descriptors = nsa;
 }

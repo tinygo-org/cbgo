@@ -14,6 +14,8 @@ type MutableDescriptor struct {
 }
 
 func NewMutableDescriptor(uuid UUID, value []byte) MutableDescriptor {
+	defer popPool(pushPool())
+
 	cuuid := C.CString(uuid.String())
 	defer C.free(unsafe.Pointer(cuuid))
 
